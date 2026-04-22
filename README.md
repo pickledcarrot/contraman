@@ -48,6 +48,45 @@ contraman remove github
 
 `contraman <name>` is shorthand for `contraman get <name>`.
 
+This project also builds a `getpass` binary alias. It runs the same CLI, so this
+works after installation:
+
+```sh
+getpass github
+```
+
+## Installation
+
+Install both command names from this checkout with:
+
+```sh
+cargo install --path .
+```
+
+Cargo installs binaries to `~/.cargo/bin` by default. If your shell cannot find
+`contraman` or `getpass`, add that directory to your `PATH`.
+
+For zsh:
+
+```sh
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+For bash:
+
+```sh
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+If you only want a shell alias instead of a second binary, add this to your shell
+config:
+
+```sh
+alias getpass='contraman get'
+```
+
 ## Setting Passwords
 
 By default, `set` prompts for the password without echoing it to the terminal:
@@ -112,4 +151,3 @@ Main dependencies:
 - `keyring` for OS credential storage.
 - `rpassword` for hidden password prompts.
 - `dirs` for finding platform data directories.
-
