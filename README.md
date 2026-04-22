@@ -48,11 +48,11 @@ contraman remove github
 
 `contraman <name>` is shorthand for `contraman get <name>`.
 
-This project also builds a `getpass` binary alias. It runs the same CLI, so this
+This project also builds a `passman` binary alias. It runs the same CLI, so this
 works after installation:
 
 ```sh
-getpass github
+passman github
 ```
 
 ## Installation
@@ -64,7 +64,7 @@ cargo install --path .
 ```
 
 Cargo installs binaries to `~/.cargo/bin` by default. If your shell cannot find
-`contraman` or `getpass`, add that directory to your `PATH`.
+`contraman` or `passman`, add that directory to your `PATH`.
 
 For zsh:
 
@@ -84,7 +84,7 @@ If you only want a shell alias instead of a second binary, add this to your shel
 config:
 
 ```sh
-alias getpass='contraman get'
+alias passman='contraman get'
 ```
 
 ## Setting Passwords
