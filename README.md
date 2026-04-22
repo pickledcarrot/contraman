@@ -19,6 +19,7 @@ using the platform keychain where available:
 - `set` stores or updates a password for a name.
 - `get` retrieves a password, prints it, and copies it to the clipboard.
 - `list` prints the known entry names.
+- `list --with-pass` prints entry names with their password values.
 - `remove` deletes an entry from the keychain and from the local name index.
 
 The program uses the constant service name `contraman`, so entries are stored in
@@ -43,6 +44,7 @@ contraman set github
 contraman get github
 contraman github
 contraman list
+contraman list --with-pass
 contraman remove github
 ```
 
@@ -120,6 +122,30 @@ Clipboard support is implemented with platform commands:
 - Linux/Unix: `wl-copy`, then `xclip`
 
 If none of those commands are available, `get` fails with an error.
+
+## Listing Passwords
+
+By default, `list` only prints entry names:
+
+```sh
+passman list
+```
+
+To print names and passwords together, use:
+
+```sh
+passman list --with-pass
+```
+
+This prints tab-separated output:
+
+```text
+github  example-password
+```
+
+This exposes every stored password in your terminal output, so avoid running it
+where shell logging, terminal scrollback, screen sharing, or command capture is a
+concern.
 
 ## Entry Index
 

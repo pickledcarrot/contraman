@@ -35,7 +35,11 @@ enum Commands {
     /// Fetch a password, copy it to the clipboard, and print it
     Get { name: String },
     /// List known entry names
-    List,
+    List {
+        /// Include password values in the output
+        #[arg(long)]
+        with_pass: bool,
+    },
     /// Remove an entry from the keychain and local index
     Remove { name: String },
 }
@@ -46,7 +50,7 @@ pub fn run() -> Result<(), String> {
     match (cli.command, cli.name) {
         (Some(Commands::Set { name, password }), None) => set_password(&name, password),
         (Some(Commands::Get { name }), None) => get_password(&name),
-        (Some(Commands::List), None) => list_entries(),
+        (Some(Commands::List { with_pass }), None) => list_entries(with_pass),
         (Some(Commands::Remove { name }), None) => remove_password(&name),
         (None, Some(name)) => get_password(&name),
         (None, None) => {
@@ -64,6 +68,7 @@ pub fn run() -> Result<(), String> {
             println!("  {program} get <name>");
             println!("  {program} <name>");
             println!("  {program} list");
+            println!("  {program} list --with-pass");
             println!("  {program} remove <name>");
             Ok(())
         }
@@ -97,15 +102,22 @@ fn get_password(name: &str) -> Result<(), String> {
     Ok(())
 }
 
-fn list_entries() -> Result<(), String> {
+fn list_entries(with_pass: bool) -> Result<(), String> {
     let entries = read_index()?;
     if entries.is_empty() {
         println!("No entries stored yet.");
         return Ok(());
     }
 
-    for entry in entries {
-        println!("{entry}");
+    for name in entries {
+        if with_pass {
+            let password = entry(&name)?
+                .get_password()
+                .map_err(|err| format!("failed to read password for `{name}`: {err}"))?;
+            println!("{name}\t{password}");
+        } else {
+            println!("{name}");
+        }
     }
 
     Ok(())
@@ -207,8 +219,8 @@ fn index_file_path() -> Result<PathBuf, String> {
         candidates.push(path.join(SERVICE_NAME));
     }
 
-    let current_dir = env::current_dir()
-        .map_err(|err| format!("failed to resolve current directory: {err}"))?;
+    let current_dir =
+        env::current_dir().map_err(|err| format!("failed to resolve current directory: {err}"))?;
     candidates.push(current_dir.join(".contraman"));
 
     for dir in candidates {
@@ -217,8 +229,10 @@ fn index_file_path() -> Result<PathBuf, String> {
         }
     }
 
-    Err("failed to create a writable data directory; set CONTRAMAN_DATA_DIR to a writable path"
-        .to_string())
+    Err(
+        "failed to create a writable data directory; set CONTRAMAN_DATA_DIR to a writable path"
+            .to_string(),
+    )
 }
 
 fn read_index() -> Result<BTreeSet<String>, String> {
